@@ -1,0 +1,360 @@
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useTimer } from "@/hooks/useTimer";
+import { ProgressRing } from "@/components/ui/progress-ring";
+import { AppState, DailyTask, JournalEntry } from "@shared/schema";
+import { loadAppState, generateDailyTasks } from "@/lib/storage";
+import { useToast } from "@/hooks/use-toast";
+
+export default function Challenges() {
+  const [appState, setAppState] = useLocalStorage<AppState>("life-reset-30-app-state", loadAppState());
+  const [todaysTasks, setTodaysTasks] = useState<DailyTask[]>([]);
+  const [journalEntry, setJournalEntry] = useState({
+    wentWell: "",
+    couldImprove: "",
+    tomorrowPriority: "",
+  });
+  const [activeTimer, setActiveTimer] = useState<'meditation' | 'exercise' | null>(null);
+  const { toast } = useToast();
+
+  // Meditation timer (10 minutes)
+  const meditationTimer = useTimer({
+    initialTime: 600, // 10 minutes in seconds
+    onComplete: () => {
+      toast({
+        title: "Meditation Complete! 🧘‍♀️",
+        description: "Great job on completing your meditation session.",
+      });
+      setActiveTimer(null);
+    },
+  });
+
+  // Exercise timer (20 minutes)
+  const exerciseTimer = useTimer({
+    initialTime: 1200, // 20 minutes in seconds
+    onComplete: () => {
+      toast({
+        title: "Workout Complete! 💪",
+        description: "Amazing work on completing your exercise session.",
+      });
+      setActiveTimer(null);
+    },
+  });
+
+  // Load today's tasks
+  useEffect(() => {
+    const currentDay = appState.progress.currentDay;
+    let tasks = appState.dailyTasks[currentDay.toString()];
+    
+    if (!tasks) {
+      tasks = generateDailyTasks(currentDay);
+      setAppState(prev => ({
+        ...prev,
+        dailyTasks: {
+          ...prev.dailyTasks,
+          [currentDay.toString()]: tasks,
+        },
+      }));
+    }
+    
+    setTodaysTasks(tasks);
+  }, [appState.progress.currentDay]);
+
+  // Load existing journal entry for today
+  useEffect(() => {
+    const existingEntry = appState.journalEntries.find(
+      entry => entry.day === appState.progress.currentDay
+    );
+    if (existingEntry) {
+      setJournalEntry({
+        wentWell: existingEntry.wentWell,
+        couldImprove: existingEntry.couldImprove,
+        tomorrowPriority: existingEntry.tomorrowPriority,
+      });
+    }
+  }, [appState.progress.currentDay, appState.journalEntries]);
+
+  const handleTaskToggle = (taskId: string) => {
+    const updatedTasks = todaysTasks.map(task => 
+      task.id === taskId ? { ...task, completed: !task.completed } : task
+    );
+    
+    setTodaysTasks(updatedTasks);
+    
+    setAppState(prev => ({
+      ...prev,
+      dailyTasks: {
+        ...prev.dailyTasks,
+        [prev.progress.currentDay.toString()]: updatedTasks,
+      },
+    }));
+  };
+
+  const handleSaveJournal = () => {
+    const newEntry: JournalEntry = {
+      id: `${appState.progress.currentDay}-journal`,
+      date: new Date(),
+      day: appState.progress.currentDay,
+      wentWell: journalEntry.wentWell,
+      couldImprove: journalEntry.couldImprove,
+      tomorrowPriority: journalEntry.tomorrowPriority,
+    };
+
+    setAppState(prev => ({
+      ...prev,
+      journalEntries: [
+        ...prev.journalEntries.filter(entry => entry.day !== appState.progress.currentDay),
+        newEntry,
+      ],
+    }));
+
+    toast({
+      title: "Journal Saved! 📝",
+      description: "Your reflection has been saved successfully.",
+    });
+  };
+
+  const startTimer = (type: 'meditation' | 'exercise') => {
+    setActiveTimer(type);
+    if (type === 'meditation') {
+      meditationTimer.start();
+    } else {
+      exerciseTimer.start();
+    }
+  };
+
+  const getActiveTimerData = () => {
+    if (activeTimer === 'meditation') {
+      return {
+        timer: meditationTimer,
+        title: "Meditation Timer",
+        duration: 10,
+        icon: "fas fa-om",
+      };
+    } else if (activeTimer === 'exercise') {
+      return {
+        timer: exerciseTimer,
+        title: "Exercise Timer",
+        duration: 20,
+        icon: "fas fa-dumbbell",
+      };
+    }
+    return null;
+  };
+
+  const activeTimerData = getActiveTimerData();
+
+  return (
+    <div className="pt-24 pb-20 md:pb-8">
+      <div className="container mx-auto px-4 mb-12">
+        <motion.div 
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-3xl font-bold mb-2">Today's Challenges</h2>
+          <p className="text-muted-foreground">Small steps lead to big transformations</p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Challenge Checklist */}
+          <motion.div 
+            className="space-y-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-bold mb-6">Daily Tasks</h3>
+                
+                <div className="space-y-4">
+                  {todaysTasks.map((task, index) => (
+                    <motion.div 
+                      key={task.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      className="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <input
+                          type="checkbox"
+                          checked={task.completed}
+                          onChange={() => handleTaskToggle(task.id)}
+                          className="w-6 h-6 text-primary rounded"
+                          data-testid={`task-checkbox-${task.id}`}
+                        />
+                        <div>
+                          <div className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                            {task.title}
+                          </div>
+                          <div className="text-sm text-muted-foreground">{task.description}</div>
+                        </div>
+                      </div>
+                      {task.completed ? (
+                        <i className="fas fa-check-circle text-success text-xl" data-testid={`task-completed-${task.id}`}></i>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            if (task.title.toLowerCase().includes('meditation')) {
+                              startTimer('meditation');
+                            } else if (task.title.toLowerCase().includes('exercise')) {
+                              startTimer('exercise');
+                            }
+                          }}
+                          disabled={activeTimer !== null}
+                          data-testid={`start-task-${task.id}`}
+                        >
+                          {task.title.toLowerCase().includes('meditation') || task.title.toLowerCase().includes('exercise') ? 'Start' : 'Later'}
+                        </Button>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Timer Section */}
+          <motion.div 
+            className="space-y-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {/* Active Timer */}
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-bold mb-6 text-center">
+                  {activeTimerData ? activeTimerData.title : 'Timer Ready'}
+                </h3>
+                
+                <div className="flex justify-center mb-6">
+                  {activeTimerData ? (
+                    <ProgressRing 
+                      progress={activeTimerData.timer.progress}
+                      size={200}
+                      className="animate-glow"
+                    >
+                      <div className="text-center">
+                        <div className="text-3xl font-bold" data-testid="timer-display">
+                          {activeTimerData.timer.formatTime()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {Math.ceil(activeTimerData.timer.timeRemaining / 60)} min left
+                        </div>
+                      </div>
+                    </ProgressRing>
+                  ) : (
+                    <div className="w-48 h-48 rounded-full border-8 border-muted flex items-center justify-center">
+                      <div className="text-center text-muted-foreground">
+                        <i className="fas fa-play text-4xl mb-2 block"></i>
+                        <div>Start a Timer</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {activeTimerData ? (
+                  <div className="flex justify-center space-x-4">
+                    <Button 
+                      onClick={activeTimerData.timer.isPaused ? activeTimerData.timer.resume : activeTimerData.timer.pause}
+                      data-testid="timer-pause-resume"
+                    >
+                      <i className={`fas fa-${activeTimerData.timer.isPaused ? 'play' : 'pause'} mr-2`}></i>
+                      {activeTimerData.timer.isPaused ? 'Resume' : 'Pause'}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        activeTimerData.timer.stop();
+                        setActiveTimer(null);
+                      }}
+                      data-testid="timer-stop"
+                    >
+                      <i className="fas fa-stop mr-2"></i> Stop
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex justify-center space-x-4">
+                    <Button onClick={() => startTimer('meditation')} data-testid="start-meditation-timer">
+                      <i className="fas fa-om mr-2"></i> Meditation (10min)
+                    </Button>
+                    <Button onClick={() => startTimer('exercise')} data-testid="start-exercise-timer">
+                      <i className="fas fa-dumbbell mr-2"></i> Exercise (20min)
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Journal Input */}
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-bold mb-4">Evening Reflection</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="went-well" className="block text-sm font-medium mb-2">
+                      What went well today?
+                    </Label>
+                    <Textarea
+                      id="went-well"
+                      value={journalEntry.wentWell}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, wentWell: e.target.value }))}
+                      placeholder="Write your thoughts..."
+                      rows={3}
+                      data-testid="journal-went-well"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="could-improve" className="block text-sm font-medium mb-2">
+                      What could I improve?
+                    </Label>
+                    <Textarea
+                      id="could-improve"
+                      value={journalEntry.couldImprove}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, couldImprove: e.target.value }))}
+                      placeholder="Be honest with yourself..."
+                      rows={3}
+                      data-testid="journal-could-improve"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="tomorrow-priority" className="block text-sm font-medium mb-2">
+                      Tomorrow's priority?
+                    </Label>
+                    <Textarea
+                      id="tomorrow-priority"
+                      value={journalEntry.tomorrowPriority}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, tomorrowPriority: e.target.value }))}
+                      placeholder="Focus on one key thing..."
+                      rows={2}
+                      data-testid="journal-tomorrow-priority"
+                    />
+                  </div>
+                </div>
+
+                <Button 
+                  className="w-full mt-4" 
+                  onClick={handleSaveJournal}
+                  data-testid="save-reflection-button"
+                >
+                  Save Reflection
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0 0% 4%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(0 0% 8%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(0 0% 8%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(217 100% 50%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(345 100% 50%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(0 0% 12%);
+  --muted-foreground: hsl(0 0% 65%);
+  --accent: hsl(0 0% 100%);
+  --accent-foreground: hsl(0 0% 4%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --success: hsl(142 71% 45%);
+  --success-foreground: hsl(0 0% 98%);
+  --border: hsl(0 0% 15%);
+  --input: hsl(0 0% 15%);
+  --ring: hsl(217 100% 50%);
+  --chart-1: hsl(217 100% 50%);
+  --chart-2: hsl(142 71% 45%);
+  --chart-3: hsl(345 100% 50%);
+  --chart-4: hsl(60 100% 50%);
+  --chart-5: hsl(280 100% 50%);
+  --sidebar: hsl(0 0% 8%);
+  --sidebar-foreground: hsl(0 0% 98%);
+  --sidebar-primary: hsl(217 100% 50%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(0 0% 12%);
+  --sidebar-accent-foreground: hsl(217 100% 50%);
+  --sidebar-border: hsl(0 0% 15%);
+  --sidebar-ring: hsl(217 100% 50%);
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 12px;
+  --shadow-2xs: 0px 2px 0px 0px hsl(217 100% 50% / 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(217 100% 50% / 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(217 100% 50% / 0.00), 0px 1px 2px -1px hsl(217 100% 50% / 0.00);
+  --shadow: 0px 2px 0px 0px hsl(217 100% 50% / 0.00), 0px 1px 2px -1px hsl(217 100% 50% / 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(217 100% 50% / 0.00), 0px 2px 4px -1px hsl(217 100% 50% / 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(217 100% 50% / 0.00), 0px 4px 6px -1px hsl(217 100% 50% / 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(217 100% 50% / 0.00), 0px 8px 10px -1px hsl(217 100% 50% / 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(217 100% 50% / 0.00);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(217 100% 50%) 0%, hsl(345 100% 50%) 100%);
+  }
+
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+  }
+
+  .hover-scale {
+    transition: transform 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  .progress-bar {
+    transition: width 1s ease-out;
+  }
+}
+
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce 2s infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .floating-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 20px -10px var(--primary); }
+  to { box-shadow: 0 0 20px -5px var(--primary); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
