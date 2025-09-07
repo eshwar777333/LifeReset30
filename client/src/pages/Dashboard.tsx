@@ -72,28 +72,44 @@ export default function Dashboard() {
 
   return (
     <div className="pt-20 pb-24 md:pt-24 md:pb-8 scroll-smooth">
-      {/* Background Animation */}
+      {/* Enhanced Background Animation */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow floating-animation"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-slow floating-animation" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-3/4 left-1/2 w-64 h-64 bg-success/8 rounded-full blur-2xl animate-pulse-slow" style={{ animationDelay: '3s' }}></div>
       </div>
 
       <div className="container mx-auto px-4 lg:px-6 mb-12 relative">
         {/* Daily Quote Header */}
         <motion.div 
-          className="text-center mb-6 lg:mb-8"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-8 lg:mb-12 relative"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
         >
-          <div className="gradient-bg text-transparent bg-clip-text mb-4">
-            <h2 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-tight">
-              "{todaysQuote.text}"
-            </h2>
+          <div className="relative">
+            <div className="absolute -inset-4 gradient-bg opacity-20 blur-2xl rounded-3xl animate-pulse-slow"></div>
+            <div className="relative premium-card p-8 lg:p-12 rounded-3xl border border-white/10">
+              <div className="gradient-text mb-6">
+                <h2 className="hero-text text-3xl sm:text-4xl lg:text-6xl xl:text-7xl leading-tight text-shadow">
+                  "{todaysQuote.text}"
+                </h2>
+              </div>
+              <div className="flex items-center justify-center space-x-4 text-lg lg:text-xl">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  <span className="text-muted-foreground">Day</span>
+                  <span className="gradient-text font-black text-2xl" data-testid="current-day">{appState.progress.currentDay}</span>
+                  <span className="text-muted-foreground">of 30</span>
+                </div>
+                <div className="w-px h-6 bg-border"></div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">💪</span>
+                  <span className="font-semibold text-primary">Crushing it!</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-base lg:text-lg text-muted-foreground px-4">
-            Day <span className="text-primary font-bold" data-testid="current-day">{appState.progress.currentDay}</span> of 30 • You're crushing it! 💪
-          </p>
         </motion.div>
 
         {/* Progress Overview Card */}
