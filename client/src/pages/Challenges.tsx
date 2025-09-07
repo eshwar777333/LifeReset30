@@ -150,8 +150,8 @@ export default function Challenges() {
   const activeTimerData = getActiveTimerData();
 
   return (
-    <div className="pt-24 pb-20 md:pb-8">
-      <div className="container mx-auto px-4 mb-12">
+    <div className="pt-20 pb-24 md:pt-24 md:pb-8 scroll-smooth">
+      <div className="container mx-auto px-4 lg:px-6 mb-12">
         <motion.div 
           className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -162,7 +162,7 @@ export default function Challenges() {
           <p className="text-muted-foreground">Small steps lead to big transformations</p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Challenge Checklist */}
           <motion.div 
             className="space-y-4"
@@ -188,7 +188,7 @@ export default function Challenges() {
                           type="checkbox"
                           checked={task.completed}
                           onChange={() => handleTaskToggle(task.id)}
-                          className="w-6 h-6 text-primary rounded"
+                          className="w-6 h-6 text-primary rounded touch-target"
                           data-testid={`task-checkbox-${task.id}`}
                         />
                         <div>
@@ -203,6 +203,7 @@ export default function Challenges() {
                       ) : (
                         <Button
                           size="sm"
+                          className="touch-target tap-highlight-none hover-scale"
                           onClick={() => {
                             if (task.title.toLowerCase().includes('meditation')) {
                               startTimer('meditation');
@@ -213,7 +214,9 @@ export default function Challenges() {
                           disabled={activeTimer !== null}
                           data-testid={`start-task-${task.id}`}
                         >
-                          {task.title.toLowerCase().includes('meditation') || task.title.toLowerCase().includes('exercise') ? 'Start' : 'Later'}
+                          {task.title.toLowerCase().includes('meditation') || task.title.toLowerCase().includes('exercise') ? (
+                            <><i className="fas fa-play mr-1"></i>Start</>
+                          ) : 'Later'}
                         </Button>
                       )}
                     </motion.div>
@@ -241,31 +244,36 @@ export default function Challenges() {
                   {activeTimerData ? (
                     <ProgressRing 
                       progress={activeTimerData.timer.progress}
-                      size={200}
-                      className="animate-glow"
+                      size={180}
+                      className="animate-glow lg:w-[200px] lg:h-[200px]"
                     >
                       <div className="text-center">
-                        <div className="text-3xl font-bold" data-testid="timer-display">
+                        <div className="text-2xl lg:text-3xl font-bold" data-testid="timer-display">
                           {activeTimerData.timer.formatTime()}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-xs lg:text-sm text-muted-foreground">
                           {Math.ceil(activeTimerData.timer.timeRemaining / 60)} min left
+                        </div>
+                        <div className="text-xs text-primary font-medium mt-1">
+                          {activeTimerData.title}
                         </div>
                       </div>
                     </ProgressRing>
                   ) : (
-                    <div className="w-48 h-48 rounded-full border-8 border-muted flex items-center justify-center">
+                    <div className="w-44 h-44 lg:w-48 lg:h-48 rounded-full border-8 border-muted flex items-center justify-center hover-scale cursor-pointer transition-all duration-300">
                       <div className="text-center text-muted-foreground">
-                        <i className="fas fa-play text-4xl mb-2 block"></i>
-                        <div>Start a Timer</div>
+                        <i className="fas fa-play text-3xl lg:text-4xl mb-2 block"></i>
+                        <div className="text-sm lg:text-base font-medium">Start a Timer</div>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {activeTimerData ? (
-                  <div className="flex justify-center space-x-4">
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                     <Button 
+                      size="lg"
+                      className="touch-target tap-highlight-none hover-scale flex-1 sm:flex-none"
                       onClick={activeTimerData.timer.isPaused ? activeTimerData.timer.resume : activeTimerData.timer.pause}
                       data-testid="timer-pause-resume"
                     >
@@ -273,7 +281,9 @@ export default function Challenges() {
                       {activeTimerData.timer.isPaused ? 'Resume' : 'Pause'}
                     </Button>
                     <Button 
+                      size="lg"
                       variant="outline" 
+                      className="touch-target tap-highlight-none hover-scale flex-1 sm:flex-none"
                       onClick={() => {
                         activeTimerData.timer.stop();
                         setActiveTimer(null);
@@ -284,11 +294,21 @@ export default function Challenges() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex justify-center space-x-4">
-                    <Button onClick={() => startTimer('meditation')} data-testid="start-meditation-timer">
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+                    <Button 
+                      size="lg" 
+                      className="touch-target tap-highlight-none hover-scale flex-1 sm:flex-none"
+                      onClick={() => startTimer('meditation')} 
+                      data-testid="start-meditation-timer"
+                    >
                       <i className="fas fa-om mr-2"></i> Meditation (10min)
                     </Button>
-                    <Button onClick={() => startTimer('exercise')} data-testid="start-exercise-timer">
+                    <Button 
+                      size="lg" 
+                      className="touch-target tap-highlight-none hover-scale flex-1 sm:flex-none"
+                      onClick={() => startTimer('exercise')} 
+                      data-testid="start-exercise-timer"
+                    >
                       <i className="fas fa-dumbbell mr-2"></i> Exercise (20min)
                     </Button>
                   </div>
@@ -344,10 +364,12 @@ export default function Challenges() {
                 </div>
 
                 <Button 
-                  className="w-full mt-4" 
+                  size="lg"
+                  className="w-full mt-4 touch-target tap-highlight-none hover-scale" 
                   onClick={handleSaveJournal}
                   data-testid="save-reflection-button"
                 >
+                  <i className="fas fa-save mr-2"></i>
                   Save Reflection
                 </Button>
               </CardContent>

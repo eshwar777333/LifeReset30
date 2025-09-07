@@ -8,6 +8,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { AppState, DailyTask } from "@shared/schema";
 import { loadAppState, saveAppState, generateDailyTasks, checkDailyReset } from "@/lib/storage";
 import { getTodaysQuote } from "@/lib/motivationalQuotes";
+import { cn } from "@/lib/utils";
 
 export default function Dashboard() {
   const [appState, setAppState] = useLocalStorage<AppState>("life-reset-30-app-state", loadAppState());
@@ -70,27 +71,27 @@ export default function Dashboard() {
   const eveningCompleted = eveningTasks.filter(task => task.completed).length;
 
   return (
-    <div className="pt-24 pb-8 md:pb-8">
+    <div className="pt-20 pb-24 md:pt-24 md:pb-8 scroll-smooth">
       {/* Background Animation */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
       </div>
 
-      <div className="container mx-auto px-4 mb-12 relative">
+      <div className="container mx-auto px-4 lg:px-6 mb-12 relative">
         {/* Daily Quote Header */}
         <motion.div 
-          className="text-center mb-8"
+          className="text-center mb-6 lg:mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <div className="gradient-bg text-transparent bg-clip-text mb-4">
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-tight">
               "{todaysQuote.text}"
             </h2>
           </div>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base lg:text-lg text-muted-foreground px-4">
             Day <span className="text-primary font-bold" data-testid="current-day">{appState.progress.currentDay}</span> of 30 • You're crushing it! 💪
           </p>
         </motion.div>
@@ -140,7 +141,7 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Today's Tasks */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
           {/* Morning Routine */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -155,15 +156,18 @@ export default function Dashboard() {
                 </div>
                 <div className="space-y-3">
                   {morningTasks.map((task) => (
-                    <div key={task.id} className="flex items-center space-x-3">
+                    <div key={task.id} className="flex items-center space-x-3 py-2 touch-target tap-highlight-none">
                       <input
                         type="checkbox"
                         checked={task.completed}
                         onChange={() => handleTaskToggle(task.id)}
-                        className="w-5 h-5 text-primary rounded"
+                        className="w-6 h-6 text-primary rounded touch-target"
                         data-testid={`task-checkbox-${task.id}`}
                       />
-                      <span className={task.completed ? "line-through text-muted-foreground" : ""}>
+                      <span className={cn(
+                        "text-sm lg:text-base transition-all duration-300",
+                        task.completed ? "line-through text-muted-foreground" : ""
+                      )}>
                         {task.title}
                       </span>
                     </div>
@@ -211,7 +215,8 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <Link href="/skills">
-                  <Button className="mt-4 w-full" data-testid="start-learning-button">
+                  <Button className="mt-4 w-full touch-target hover-scale" size="lg" data-testid="start-learning-button">
+                    <i className="fas fa-play mr-2"></i>
                     Start Learning
                   </Button>
                 </Link>
@@ -257,40 +262,41 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
         >
           <Link href="/challenges">
-            <Button className="h-20 flex flex-col space-y-2 w-full hover-scale" data-testid="start-timer-button">
-              <i className="fas fa-play text-xl"></i>
-              <span>Start Timer</span>
+            <Button className="h-20 lg:h-24 flex flex-col space-y-2 w-full hover-scale touch-target tap-highlight-none" size="lg" data-testid="start-timer-button">
+              <i className="fas fa-play text-xl lg:text-2xl"></i>
+              <span className="text-sm lg:text-base font-medium">Start Timer</span>
             </Button>
           </Link>
           <Link href="/challenges">
-            <Button variant="outline" className="h-20 flex flex-col space-y-2 w-full hover-scale" data-testid="journal-button">
-              <i className="fas fa-book text-xl"></i>
-              <span>Journal</span>
+            <Button variant="outline" className="h-20 lg:h-24 flex flex-col space-y-2 w-full hover-scale touch-target tap-highlight-none" size="lg" data-testid="journal-button">
+              <i className="fas fa-book text-xl lg:text-2xl"></i>
+              <span className="text-sm lg:text-base font-medium">Journal</span>
             </Button>
           </Link>
           <Link href="/progress">
-            <Button variant="outline" className="h-20 flex flex-col space-y-2 w-full hover-scale" data-testid="progress-button">
-              <i className="fas fa-chart-line text-xl"></i>
-              <span>Progress</span>
+            <Button variant="outline" className="h-20 lg:h-24 flex flex-col space-y-2 w-full hover-scale touch-target tap-highlight-none" size="lg" data-testid="progress-button">
+              <i className="fas fa-chart-line text-xl lg:text-2xl"></i>
+              <span className="text-sm lg:text-base font-medium">Progress</span>
             </Button>
           </Link>
           <Button 
             variant="destructive" 
-            className="h-20 flex flex-col space-y-2 w-full hover-scale bg-secondary hover:bg-secondary/90" 
+            className="h-20 lg:h-24 flex flex-col space-y-2 w-full hover-scale bg-secondary hover:bg-secondary/90 touch-target tap-highlight-none" 
+            size="lg"
             data-testid="emergency-button"
             onClick={() => {
               // TODO: Implement emergency mode
               alert("Emergency mode activated! Take 5 deep breaths and do 5 push-ups.");
             }}
           >
-            <i className="fas fa-exclamation-triangle text-xl"></i>
-            <span>SOS Mode</span>
+            <i className="fas fa-exclamation-triangle text-xl lg:text-2xl"></i>
+            <span className="text-sm lg:text-base font-medium">SOS Mode</span>
           </Button>
         </motion.div>
       </div>

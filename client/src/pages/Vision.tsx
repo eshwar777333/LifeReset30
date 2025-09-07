@@ -119,8 +119,8 @@ export default function Vision() {
   const todaysQuote = motivationalQuotes[appState.progress.currentDay % motivationalQuotes.length];
 
   return (
-    <div className="pt-24 pb-20 md:pb-8">
-      <div className="container mx-auto px-4 mb-12">
+    <div className="pt-20 pb-24 md:pt-24 md:pb-8 scroll-smooth">
+      <div className="container mx-auto px-4 lg:px-6 mb-12">
         <motion.div 
           className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -140,7 +140,7 @@ export default function Vision() {
         >
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="hover-scale" size="lg" data-testid="add-vision-button">
+              <Button className="hover-scale touch-target tap-highlight-none" size="lg" data-testid="add-vision-button">
                 <Plus className="mr-2 h-4 w-4" />
                 Add New Vision
               </Button>
@@ -217,7 +217,13 @@ export default function Vision() {
                     data-testid="vision-date-input"
                   />
                 </div>
-                <Button onClick={handleAddVision} className="w-full" data-testid="create-vision-button">
+                <Button 
+                  onClick={handleAddVision} 
+                  size="lg"
+                  className="w-full touch-target tap-highlight-none hover-scale" 
+                  data-testid="create-vision-button"
+                >
+                  <i className="fas fa-plus mr-2"></i>
                   Create Vision
                 </Button>
               </div>
@@ -228,7 +234,7 @@ export default function Vision() {
         {/* Vision Cards Grid */}
         {appState.visionGoals.length > 0 ? (
           <motion.div 
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+            className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -240,7 +246,7 @@ export default function Vision() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Card className="overflow-hidden hover-scale cursor-pointer group">
+                <Card className="overflow-hidden hover-scale cursor-pointer group touch-target tap-highlight-none">
                   {/* Vision Header */}
                   <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${getCategoryColor(vision.category)} flex items-center justify-center`}>
                     <div className="text-white text-center z-10">
@@ -285,10 +291,11 @@ export default function Vision() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="flex-1"
+                        className="flex-1 touch-target tap-highlight-none hover-scale"
                         onClick={() => handleProgressUpdate(vision.id, Math.min(100, vision.progress + 5))}
                         data-testid={`update-progress-${index}`}
                       >
+                        <i className="fas fa-plus mr-1"></i>
                         +5% Progress
                       </Button>
                     </div>
@@ -307,7 +314,12 @@ export default function Vision() {
             <div className="text-6xl mb-4">✨</div>
             <h3 className="text-xl font-bold mb-2">No Visions Yet</h3>
             <p className="text-muted-foreground mb-4">Create your first vision to get started on your journey</p>
-            <Button onClick={() => setIsDialogOpen(true)} data-testid="first-vision-button">
+            <Button 
+              onClick={() => setIsDialogOpen(true)} 
+              size="lg"
+              className="touch-target tap-highlight-none hover-scale"
+              data-testid="first-vision-button"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Your First Vision
             </Button>

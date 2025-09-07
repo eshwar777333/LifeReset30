@@ -47,8 +47,8 @@ export default function Progress() {
   const completionRate = Math.round((appState.progress.currentDay / 30) * 100);
 
   return (
-    <div className="pt-24 pb-20 md:pb-8">
-      <div className="container mx-auto px-4 mb-12">
+    <div className="pt-20 pb-24 md:pt-24 md:pb-8 scroll-smooth">
+      <div className="container mx-auto px-4 lg:px-6 mb-12">
         <motion.div 
           className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -61,7 +61,7 @@ export default function Progress() {
 
         {/* Achievement Badges */}
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6 lg:mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -74,7 +74,7 @@ export default function Progress() {
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
               <Card className={cn(
-                "text-center hover-scale cursor-pointer transition-all duration-300",
+                "text-center hover-scale cursor-pointer transition-all duration-300 touch-target tap-highlight-none",
                 badge.unlocked 
                   ? "border-success/50 bg-success/5" 
                   : "opacity-50 border-border"

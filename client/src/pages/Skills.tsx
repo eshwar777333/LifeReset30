@@ -39,9 +39,10 @@ export default function Skills() {
       })),
     }));
     
+    const skillName = appState.skillPaths.find(s => s.id === skillId)?.name;
     toast({
       title: "Skill Path Changed! 🎯",
-      description: `Switched to ${prev => prev.skillPaths.find(s => s.id === skillId)?.name}`,
+      description: `Switched to ${skillName}`,
     });
   };
 
