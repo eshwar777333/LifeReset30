@@ -1,0 +1,61 @@
+You are an expert full-stack developer and motivational UI/UX designer.  
+Build me a **fully responsive website called "Life Reset 30"** that acts as a 30-day life transformation coach.  
+
+## Requirements:
+1. **Framework & Stack**
+   - Use React + TailwindCSS for frontend.
+   - Website must be 100% responsive (mobile-first design).  
+   - Use modern animations (Framer Motion or Tailwind transitions).  
+
+2. **Core Pages & Features**
+   - **Home Dashboard**
+     - Display today’s tasks (Morning Routine, Skill Task, Night Journal).  
+     - Progress bar (Day X of 30 completed).  
+     - Daily motivational quote at the top.  
+     - Streak counter 🔥.  
+
+   - **Daily Challenge Page**
+     - Checklist with tasks for the day (Cold Shower, Meditation Timer, Exercise, Skill Learning, Journal).  
+     - Meditation Timer (10 min countdown).  
+     - Exercise Timer (20 min countdown).  
+     - Journal input box (3 reflection questions auto-loaded).  
+
+   - **Progress Page**
+     - Show progress % across 30 days.  
+     - Unlock badges at milestones (Day 7, 14, 21, 30).  
+     - Streak tracker.  
+
+   - **Skill Builder Page**
+     - User selects skill path (Entrepreneurship, Coding, Digital Marketing, Sales).  
+     - Daily mini-task and link to resources.  
+     - Notes section to save learning.  
+
+   - **Vision Board**
+     - User can add their dream goals (BMW M3, income target, startup idea).  
+     - Display vision board cards with motivational design.  
+
+   - **Emergency Button (Distraction Mode)**
+     - Big button: “I feel distracted / lustful.”  
+     - On click → play motivational audio/video + trigger quick 5 push-ups challenge.  
+
+3. **UI/UX**
+   - Minimal, clean, bold UI.  
+   - Color palette: Dark background + bright accent (e.g., Black/White + Blue/Red).  
+   - Rounded cards, soft shadows, motivational typography.  
+   - Animate progress bars and streaks for dopamine effect.  
+   - Mobile version must feel like an app.  
+
+4. **Extra Features**
+   - Save progress to localStorage (so user progress isn’t lost).  
+   - Daily reset system (automatically unlock next day’s tasks).  
+   - Export Journal entries to TXT.  
+
+5. **Motivational Feel**
+   - Every page should feel energetic and uplifting.  
+   - Use large bold quotes like: *“Discipline = Freedom”*, *“1% Better Every Day”*.  
+   - Add subtle background animation for energy.  
+
+## Output
+- Deliver clean, well-structured React + Tailwind code.  
+- Ensure full mobile responsiveness.  
+- Include comments in code for easy modification.  
