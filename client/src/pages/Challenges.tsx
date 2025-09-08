@@ -7,13 +7,25 @@ import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useTimer } from "@/hooks/useTimer";
 import { ProgressRing } from "@/components/ui/progress-ring";
-import { AppState, DailyTask, JournalEntry } from "@shared/schema";
+import { AppState } from "@shared/schema";
 import { loadAppState, generateDailyTasks } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
+import { debounce } from "@/lib/utils";
+import { useSound } from "@/hooks/useSound";
 
 export default function Challenges() {
   const [appState, setAppState] = useLocalStorage<AppState>("life-reset-30-app-state", loadAppState());
-  const [todaysTasks, setTodaysTasks] = useState<DailyTask[]>([]);
+  const { play } = useSound();
+  type FrontendDailyTask = {
+    id: string;
+    title: string;
+    description: string;
+    duration: number;
+    category: "morning" | "skill" | "evening";
+    completed: boolean;
+    icon: string;
+  };
+  const [todaysTasks, setTodaysTasks] = useState<FrontendDailyTask[]>([]);
   const [journalEntry, setJournalEntry] = useState({
     wentWell: "",
     couldImprove: "",
@@ -26,10 +38,11 @@ export default function Challenges() {
   const meditationTimer = useTimer({
     initialTime: 600, // 10 minutes in seconds
     onComplete: () => {
-      toast({
+  toast({
         title: "Meditation Complete! 🧘‍♀️",
         description: "Great job on completing your meditation session.",
       });
+  play('task:complete');
       setActiveTimer(null);
     },
   });
@@ -38,10 +51,11 @@ export default function Challenges() {
   const exerciseTimer = useTimer({
     initialTime: 1200, // 20 minutes in seconds
     onComplete: () => {
-      toast({
+  toast({
         title: "Workout Complete! 💪",
         description: "Amazing work on completing your exercise session.",
       });
+  play('task:complete');
       setActiveTimer(null);
     },
   });
@@ -49,35 +63,49 @@ export default function Challenges() {
   // Load today's tasks
   useEffect(() => {
     const currentDay = appState.progress.currentDay;
-    let tasks = appState.dailyTasks[currentDay.toString()];
+    let tasks = appState.dailyTasks[currentDay.toString()] as any[] | undefined;
     
     if (!tasks) {
-      tasks = generateDailyTasks(currentDay);
+      tasks = generateDailyTasks(currentDay) as any[];
       setAppState(prev => ({
         ...prev,
         dailyTasks: {
           ...prev.dailyTasks,
-          [currentDay.toString()]: tasks,
+          [currentDay.toString()]: tasks as any,
         },
       }));
     }
     
-    setTodaysTasks(tasks);
+    setTodaysTasks(tasks as unknown as FrontendDailyTask[]);
   }, [appState.progress.currentDay]);
 
   // Load existing journal entry for today
   useEffect(() => {
-    const existingEntry = appState.journalEntries.find(
-      entry => entry.day === appState.progress.currentDay
-    );
-    if (existingEntry) {
-      setJournalEntry({
-        wentWell: existingEntry.wentWell,
-        couldImprove: existingEntry.couldImprove,
-        tomorrowPriority: existingEntry.tomorrowPriority,
-      });
-    }
-  }, [appState.progress.currentDay, appState.journalEntries]);
+    // Do not prefill from DB/local; start with empty inputs each day
+    setJournalEntry({
+      wentWell: "",
+      couldImprove: "",
+      tomorrowPriority: "",
+    });
+  }, [appState.progress.currentDay]);
+
+  const insertYesterdaysEntry = () => {
+    try {
+      const local = localStorage.getItem('life-reset-30-app-state');
+      if (!local) return;
+      const parsed = JSON.parse(local);
+      const yesterday = appState.progress.currentDay - 1;
+      if (yesterday < 1) return;
+      const entry = (parsed.journalEntries || []).find((e: any) => e.day === yesterday);
+      if (entry) {
+        setJournalEntry({
+          wentWell: entry.wentWell || '',
+          couldImprove: entry.couldImprove || '',
+          tomorrowPriority: entry.tomorrowPriority || '',
+        });
+      }
+    } catch {}
+  };
 
   const handleTaskToggle = (taskId: string) => {
     const updatedTasks = todaysTasks.map(task => 
@@ -90,13 +118,63 @@ export default function Challenges() {
       ...prev,
       dailyTasks: {
         ...prev.dailyTasks,
-        [prev.progress.currentDay.toString()]: updatedTasks,
+        [prev.progress.currentDay.toString()]: updatedTasks as any,
       },
     }));
   };
 
-  const handleSaveJournal = () => {
-    const newEntry: JournalEntry = {
+  const saveJournal = async () => {
+    try {
+      // Save to database first
+      const existingEntry = appState.journalEntries.find(
+        entry => entry.day === appState.progress.currentDay
+      );
+
+      if (existingEntry) {
+        // Update existing entry in database (find by day since we don't have the database ID)
+        const response = await fetch('/api/journal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            day: appState.progress.currentDay,
+            wentWell: journalEntry.wentWell,
+            couldImprove: journalEntry.couldImprove,
+            tomorrowPriority: journalEntry.tomorrowPriority,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save journal entry to database');
+        }
+      } else {
+        // Create new entry in database
+        const response = await fetch('/api/journal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            day: appState.progress.currentDay,
+            wentWell: journalEntry.wentWell,
+            couldImprove: journalEntry.couldImprove,
+            tomorrowPriority: journalEntry.tomorrowPriority,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save journal entry to database');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving to database:', error);
+      // Continue with localStorage save even if database fails
+      play('error');
+    }
+
+    // Always save to localStorage as backup
+  const newEntry = {
       id: `${appState.progress.currentDay}-journal`,
       date: new Date(),
       day: appState.progress.currentDay,
@@ -108,8 +186,8 @@ export default function Challenges() {
     setAppState(prev => ({
       ...prev,
       journalEntries: [
-        ...prev.journalEntries.filter(entry => entry.day !== appState.progress.currentDay),
-        newEntry,
+        ...prev.journalEntries.filter(entry => (entry as any).day !== appState.progress.currentDay),
+        newEntry as any,
       ],
     }));
 
@@ -117,7 +195,17 @@ export default function Challenges() {
       title: "Journal Saved! 📝",
       description: "Your reflection has been saved successfully.",
     });
+  play('save');
+
+    // Clear inputs after successful save
+    setJournalEntry({
+      wentWell: "",
+      couldImprove: "",
+      tomorrowPriority: "",
+    });
   };
+
+  const handleSaveJournal = debounce(saveJournal, 600);
 
   const startTimer = (type: 'meditation' | 'exercise') => {
     setActiveTimer(type);
@@ -181,43 +269,43 @@ export default function Challenges() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                     >
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-start gap-3 w-full min-w-0">
                         <input
                           type="checkbox"
-                          checked={task.completed}
+                          checked={!!task.completed}
                           onChange={() => handleTaskToggle(task.id)}
-                          className="w-6 h-6 text-primary rounded touch-target"
+                          className="w-4 h-4 text-primary rounded"
                           data-testid={`task-checkbox-${task.id}`}
                         />
-                        <div>
-                          <div className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                        <div className="min-w-0">
+                          <div className={`font-medium break-words ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
                             {task.title}
                           </div>
-                          <div className="text-sm text-muted-foreground">{task.description}</div>
+                          <div className="text-sm text-muted-foreground leading-snug break-words">{task.description}</div>
                         </div>
                       </div>
                       {task.completed ? (
-                        <i className="fas fa-check-circle text-success text-xl" data-testid={`task-completed-${task.id}`}></i>
+                        <i className="fas fa-check-circle text-success text-xl sm:self-auto self-end" data-testid={`task-completed-${task.id}`}></i>
                       ) : (
-                        <Button
-                          size="sm"
-                          className="touch-target tap-highlight-none hover-scale"
-                          onClick={() => {
-                            if (task.title.toLowerCase().includes('meditation')) {
-                              startTimer('meditation');
-                            } else if (task.title.toLowerCase().includes('exercise')) {
-                              startTimer('exercise');
-                            }
-                          }}
-                          disabled={activeTimer !== null}
-                          data-testid={`start-task-${task.id}`}
-                        >
-                          {task.title.toLowerCase().includes('meditation') || task.title.toLowerCase().includes('exercise') ? (
-                            <><i className="fas fa-play mr-1"></i>Start</>
-                          ) : 'Later'}
-                        </Button>
+                        (task.title.toLowerCase().includes('meditation') || task.title.toLowerCase().includes('exercise')) ? (
+                          <Button
+                            size="sm"
+                            className="touch-target tap-highlight-none hover-scale w-full sm:w-auto"
+                            onClick={() => {
+                              if (task.title.toLowerCase().includes('meditation')) {
+                                startTimer('meditation');
+                              } else if (task.title.toLowerCase().includes('exercise')) {
+                                startTimer('exercise');
+                              }
+                            }}
+                            disabled={activeTimer !== null}
+                            data-testid={`start-task-${task.id}`}
+                          >
+                            <i className="fas fa-play mr-1"></i>Start
+                          </Button>
+                        ) : null
                       )}
                     </motion.div>
                   ))}
@@ -320,6 +408,11 @@ export default function Challenges() {
             <Card>
               <CardContent className="pt-6">
                 <h3 className="text-xl font-bold mb-4">Evening Reflection</h3>
+                <div className="flex justify-end mb-2">
+                  <Button size="sm" variant="outline" onClick={insertYesterdaysEntry}>
+                    <i className="fas fa-rotate mr-2"></i> Insert yesterday's entry
+                  </Button>
+                </div>
                 
                 <div className="space-y-4">
                   <div>

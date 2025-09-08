@@ -1,4 +1,4 @@
-import { AppState, DailyTask, UserProgress, SkillPath, VisionGoal } from '@shared/schema';
+import { AppState } from '@shared/schema';
 
 const STORAGE_KEY = 'life-reset-30-app-state';
 
@@ -75,10 +75,21 @@ export const getDefaultAppState = (): AppState => ({
 });
 
 // Generate daily tasks for a specific day
-export const generateDailyTasks = (day: number): DailyTask[] => {
+export const generateDailyTasks = (day: number) => {
+  type FrontendDailyTask = {
+    id: string;
+    title: string;
+    description: string;
+    duration: number;
+    category: 'morning' | 'skill' | 'evening';
+    completed: boolean;
+    icon: string;
+  priority: 'low' | 'high' | 'immediate';
+  };
+
   const activeSkill = getActiveSkillPath();
   
-  return [
+  const tasks: FrontendDailyTask[] = [
     {
       id: `${day}-cold-shower`,
       title: 'Cold Shower',
@@ -86,7 +97,8 @@ export const generateDailyTasks = (day: number): DailyTask[] => {
       duration: 5,
       category: 'morning' as const,
       completed: false,
-      icon: 'fas fa-shower',
+  icon: 'fas fa-shower',
+  priority: 'low',
     },
     {
       id: `${day}-meditation`,
@@ -95,7 +107,8 @@ export const generateDailyTasks = (day: number): DailyTask[] => {
       duration: 10,
       category: 'morning' as const,
       completed: false,
-      icon: 'fas fa-om',
+  icon: 'fas fa-om',
+  priority: 'low',
     },
     {
       id: `${day}-gratitude-journal`,
@@ -104,7 +117,8 @@ export const generateDailyTasks = (day: number): DailyTask[] => {
       duration: 5,
       category: 'morning' as const,
       completed: false,
-      icon: 'fas fa-heart',
+  icon: 'fas fa-heart',
+  priority: 'low',
     },
     {
       id: `${day}-skill-learning`,
@@ -113,7 +127,8 @@ export const generateDailyTasks = (day: number): DailyTask[] => {
       duration: 30,
       category: 'skill' as const,
       completed: false,
-      icon: activeSkill.icon,
+  icon: activeSkill.icon,
+  priority: 'low',
     },
     {
       id: `${day}-exercise`,
@@ -122,7 +137,8 @@ export const generateDailyTasks = (day: number): DailyTask[] => {
       duration: 20,
       category: 'evening' as const,
       completed: false,
-      icon: 'fas fa-dumbbell',
+  icon: 'fas fa-dumbbell',
+  priority: 'low',
     },
     {
       id: `${day}-evening-reflection`,
@@ -131,13 +147,25 @@ export const generateDailyTasks = (day: number): DailyTask[] => {
       duration: 10,
       category: 'evening' as const,
       completed: false,
-      icon: 'fas fa-moon',
+  icon: 'fas fa-moon',
+  priority: 'low',
     },
   ];
+  return tasks;
 };
 
 // Get active skill path
-export const getActiveSkillPath = (): SkillPath => {
+type LocalSkillPath = {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  isActive: boolean;
+  progress: number;
+  topics: { name: string; progress: number; }[] | string;
+};
+
+export const getActiveSkillPath = (): LocalSkillPath => {
   const appState = loadAppState();
   return appState.skillPaths.find(skill => skill.isActive) || appState.skillPaths[0];
 };

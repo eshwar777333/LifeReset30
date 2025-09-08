@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { AppState, VisionGoal } from "@shared/schema";
-import { loadAppState } from "@/lib/storage";
+import { getDefaultAppState } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
+import { motivationalQuotes } from "@/lib/motivationalQuotes";
 
 export default function Vision() {
-  const [appState, setAppState] = useLocalStorage<AppState>("life-reset-30-app-state", loadAppState());
+  const [appState, setAppState] = useLocalStorage<AppState>("life-reset-30-app-state", getDefaultAppState());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newVision, setNewVision] = useState({
     title: "",
@@ -25,10 +26,36 @@ export default function Vision() {
     targetDate: "",
     category: "personal" as "financial" | "material" | "business" | "personal",
     progress: 0,
+    imageFile: null as File | null,
   });
   const { toast } = useToast();
+  const [hasLoadedFromAPI, setHasLoadedFromAPI] = useState(false);
 
-  const handleAddVision = () => {
+  // Load vision goals from API on component mount - ONLY ONCE
+  useEffect(() => {
+    if (hasLoadedFromAPI) return; // Prevent multiple API calls
+
+    const loadVisionGoals = async () => {
+      try {
+        const response = await fetch('/api/vision-goals');
+        if (response.ok) {
+          const visionGoals = await response.json();
+          setAppState(prev => ({
+            ...prev,
+            visionGoals: visionGoals,
+          }));
+          setHasLoadedFromAPI(true); // Mark as loaded
+        }
+      } catch (error) {
+        console.error('Failed to load vision goals:', error);
+        setHasLoadedFromAPI(true); // Mark as attempted even if failed
+      }
+    };
+
+    loadVisionGoals();
+  }, [hasLoadedFromAPI]); // Only run when hasLoadedFromAPI changes
+
+  const handleAddVision = async () => {
     if (!newVision.title || !newVision.targetValue || !newVision.targetDate) {
       toast({
         title: "Missing Information",
@@ -38,47 +65,97 @@ export default function Vision() {
       return;
     }
 
-    const vision: VisionGoal = {
-      id: `vision-${Date.now()}`,
-      title: newVision.title,
-      description: newVision.description,
-      targetValue: newVision.targetValue,
-      currentValue: newVision.currentValue,
-      targetDate: new Date(newVision.targetDate),
-      category: newVision.category,
-      progress: newVision.progress,
-    };
+    try {
+      const formData = new FormData();
+      formData.append('title', newVision.title);
+      formData.append('description', newVision.description);
+      formData.append('targetValue', newVision.targetValue);
+      formData.append('currentValue', newVision.currentValue);
+      formData.append('targetDate', newVision.targetDate);
+      formData.append('category', newVision.category);
+      formData.append('progress', newVision.progress.toString());
+      
+      if (newVision.imageFile) {
+        formData.append('image', newVision.imageFile);
+      }
 
-    setAppState(prev => ({
-      ...prev,
-      visionGoals: [...prev.visionGoals, vision],
-    }));
+      const response = await fetch('/api/vision-goals', {
+        method: 'POST',
+        body: formData,
+      });
 
-    setNewVision({
-      title: "",
-      description: "",
-      targetValue: "",
-      currentValue: "",
-      targetDate: "",
-      category: "personal",
-      progress: 0,
-    });
+      if (!response.ok) {
+        throw new Error('Failed to create vision goal');
+      }
 
-    setIsDialogOpen(false);
+      const createdVision = await response.json();
 
-    toast({
-      title: "Vision Added! ✨",
-      description: "Your new vision goal has been added to your board.",
-    });
+      // Update local state with the new vision from the server
+      setAppState(prev => ({
+        ...prev,
+        visionGoals: [...prev.visionGoals, createdVision],
+      }));
+
+      setNewVision({
+        title: "",
+        description: "",
+        targetValue: "",
+        currentValue: "",
+        targetDate: "",
+        category: "personal",
+        progress: 0,
+        imageFile: null,
+      });
+
+  setIsDialogOpen(false);
+
+      toast({
+        title: "Vision Added! ✨",
+        description: "Your new vision goal has been added to your board.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create vision goal. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleProgressUpdate = (visionId: string, newProgress: number) => {
-    setAppState(prev => ({
-      ...prev,
-      visionGoals: prev.visionGoals.map(vision =>
-        vision.id === visionId ? { ...vision, progress: newProgress } : vision
-      ),
-    }));
+  const handleProgressUpdate = async (visionId: string, newProgress: number) => {
+    try {
+      const response = await fetch(`/api/vision-goals/${visionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ progress: newProgress }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update progress');
+      }
+
+      const updatedVision = await response.json();
+
+      setAppState(prev => ({
+        ...prev,
+        visionGoals: prev.visionGoals.map(vision =>
+          vision.id === visionId ? updatedVision : vision
+        ),
+      }));
+
+      toast({
+        title: "Progress Updated! 🎉",
+        description: `Progress updated to ${newProgress}%`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update progress. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getCategoryIcon = (category: string) => {
@@ -101,22 +178,16 @@ export default function Vision() {
     }
   };
 
-  const motivationalQuotes = [
-    {
-      text: "Your dreams don't have an expiration date. Take a deep breath and try again.",
-      author: "KT Witten"
-    },
-    {
-      text: "The future belongs to those who believe in the beauty of their dreams.",
-      author: "Eleanor Roosevelt"
-    },
-    {
-      text: "A goal is a dream with a deadline.",
-      author: "Napoleon Hill"
-    }
-  ];
-
-  const todaysQuote = motivationalQuotes[appState.progress.currentDay % motivationalQuotes.length];
+  // Pick 10 powerful quotes from the library (or first 10) and rotate every 5s
+  const selectedQuotes = motivationalQuotes.slice(0, 10);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setQuoteIndex((i) => (i + 1) % selectedQuotes.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
+  const todaysQuote = selectedQuotes[quoteIndex] || { text: "", author: "" };
 
   return (
     <div className="pt-20 pb-24 md:pt-24 md:pb-8 scroll-smooth">
@@ -170,6 +241,32 @@ export default function Vision() {
                     rows={3}
                     data-testid="vision-description-input"
                   />
+                </div>
+                <div>
+                  <Label htmlFor="vision-image">Vision Image</Label>
+                  <div className="relative">
+                    <Input
+                      id="vision-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        setNewVision(prev => ({ ...prev, imageFile: file }));
+                      }}
+                      className="cursor-pointer file:cursor-pointer file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                      data-testid="vision-image-input"
+                    />
+                  </div>
+                  {newVision.imageFile && (
+                    <div className="mt-2 p-2 bg-muted rounded-md">
+                      <p className="text-sm text-foreground">
+                        📎 {newVision.imageFile.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {(newVision.imageFile.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="vision-category">Category</Label>
@@ -248,16 +345,27 @@ export default function Vision() {
               >
                 <Card className="overflow-hidden hover-scale cursor-pointer group touch-target tap-highlight-none">
                   {/* Vision Header */}
-                  <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${getCategoryColor(vision.category)} flex items-center justify-center`}>
+                  <div className={`relative h-48 overflow-hidden ${!vision.imageUrl ? `bg-gradient-to-br ${getCategoryColor(vision.category)}` : ''} flex items-center justify-center`}>
+                    {vision.imageUrl ? (
+                      <>
+                        <img 
+                          src={vision.imageUrl}
+                          loading="lazy"
+                          alt={vision.title}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40"></div>
+                      </>
+                    ) : null}
                     <div className="text-white text-center z-10">
-                      <div className="text-3xl font-black mb-2">{vision.targetValue}</div>
-                      <div className="text-lg">{vision.title}</div>
+                      <div className="text-3xl font-black mb-2 drop-shadow-lg">{vision.targetValue}</div>
+                      <div className="text-lg drop-shadow-lg">{vision.title}</div>
                     </div>
                     <div className="absolute top-4 right-4">
-                      <i className={`${getCategoryIcon(vision.category)} text-white/20 text-6xl`}></i>
+                      <i className={`${getCategoryIcon(vision.category)} text-white/30 text-6xl drop-shadow-lg`}></i>
                     </div>
                     <div className="absolute bottom-4 left-4 text-white">
-                      <p className="text-sm opacity-90">{vision.category}</p>
+                      <p className="text-sm opacity-90 drop-shadow-lg">{vision.category}</p>
                     </div>
                   </div>
                   
@@ -326,7 +434,7 @@ export default function Vision() {
           </motion.div>
         )}
 
-        {/* Motivational Quote */}
+        {/* Motivational Quotes (auto-rotating every 5s) */}
         <motion.div 
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -334,10 +442,17 @@ export default function Vision() {
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <div className="bg-gradient-to-r from-primary to-secondary p-8 rounded-xl">
-            <blockquote className="text-2xl md:text-3xl font-black text-white mb-4">
-              "{todaysQuote.text}"
+            <blockquote className="text-2xl md:text-3xl font-black text-white mb-2 transition-all duration-500">
+              “{todaysQuote?.text}”
             </blockquote>
-            <cite className="text-white/80">— {todaysQuote.author}</cite>
+            {todaysQuote?.author && (
+              <cite className="text-white/80">— {todaysQuote.author}</cite>
+            )}
+            <div className="mt-4 flex justify-center gap-1">
+              {selectedQuotes.map((_, i) => (
+                <span key={i} className={`w-2 h-2 rounded-full ${i === quoteIndex ? 'bg-white' : 'bg-white/40'}`}></span>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>

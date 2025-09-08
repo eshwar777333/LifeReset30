@@ -20,6 +20,8 @@ export const dailyTasks = pgTable("daily_tasks", {
   category: text("category").notNull(), // 'morning', 'skill', 'evening'
   completed: boolean("completed").default(false),
   icon: text("icon").notNull(),
+  // Task priority: low, high, immediate
+  priority: text("priority").notNull().default('low'),
   day: integer("day").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -156,6 +158,8 @@ export const dailyTaskSchema = z.object({
   category: z.enum(['morning', 'skill', 'evening']),
   completed: z.boolean().default(false),
   icon: z.string(),
+  // Optional in legacy localStorage to stay backward-compatible
+  priority: z.enum(['low', 'high', 'immediate']).optional().default('low'),
 });
 
 export const userProgressSchema = z.object({

@@ -6,50 +6,133 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { AppState, SkillPath, LearningNote } from "@shared/schema";
+import { AppState } from "@shared/schema";
 import { loadAppState } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { cn, debounce } from "@/lib/utils";
+
+type UISkillPath = {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  isActive: boolean;
+  progress: number;
+  topics: any; // array or string (server returns array; legacy local may be array)
+  userId?: string | null;
+};
 
 export default function Skills() {
   const [appState, setAppState] = useLocalStorage<AppState>("life-reset-30-app-state", loadAppState());
   const [learningNotes, setLearningNotes] = useState("");
+  const [skillPaths, setSkillPaths] = useState<UISkillPath[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const activeSkill = appState.skillPaths.find(skill => skill.isActive);
+  const activeSkill = skillPaths.find(skill => skill.isActive) || appState.skillPaths.find(skill => skill.isActive);
   
-  // Load existing notes for today
+  // Load skill paths from database
   useEffect(() => {
-    const existingNote = appState.learningNotes.find(
-      note => note.day === appState.progress.currentDay && note.skillPath === activeSkill?.id
-    );
-    if (existingNote) {
-      setLearningNotes(existingNote.content);
-    } else {
-      setLearningNotes("");
-    }
-  }, [appState.progress.currentDay, activeSkill?.id, appState.learningNotes]);
+    const loadSkillPaths = async () => {
+      try {
+        const response = await fetch('/api/skills');
+        if (response.ok) {
+          const dbSkillPaths = await response.json();
+          setSkillPaths(dbSkillPaths);
+          
+          // Sync with localStorage if database has data
+          if (dbSkillPaths.length > 0) {
+            // Persist DB UUIDs to local storage so future posts use correct IDs
+            setAppState(prev => ({
+              ...prev,
+              skillPaths: dbSkillPaths,
+            }));
+          }
+        } else {
+          // Use localStorage if database fails
+          setSkillPaths(appState.skillPaths);
+        }
+      } catch (error) {
+        console.error('Failed to load skill paths from database:', error);
+        // Fallback to localStorage
+        setSkillPaths(appState.skillPaths);
+      }
+    };
 
-  const handleSkillPathChange = (skillId: string) => {
-    setAppState(prev => ({
-      ...prev,
-      skillPaths: prev.skillPaths.map(skill => ({
+    loadSkillPaths();
+  }, []);
+  
+  // Start with empty learning notes each day (do not prefill from DB/localStorage)
+  useEffect(() => {
+    if (!activeSkill) return;
+    setLearningNotes("");
+  }, [appState.progress.currentDay, activeSkill?.id]);
+
+  const handleSkillPathChange = async (skillId: string) => {
+    setIsLoading(true);
+    
+    try {
+      // Update localStorage first
+      setAppState(prev => ({
+        ...prev,
+        skillPaths: prev.skillPaths.map(skill => ({
+          ...skill,
+          isActive: skill.id === skillId,
+        })),
+      }));
+      
+      // Also update the local skillPaths state
+      setSkillPaths(prev => prev.map(skill => ({
         ...skill,
         isActive: skill.id === skillId,
-      })),
-    }));
-    
-    const skillName = appState.skillPaths.find(s => s.id === skillId)?.name;
-    toast({
-      title: "Skill Path Changed! 🎯",
-      description: `Switched to ${skillName}`,
-    });
+      })));
+      
+      const skillName = appState.skillPaths.find(s => s.id === skillId)?.name;
+      toast({
+        title: "Skill Path Changed! 🎯",
+        description: `Switched to ${skillName}`,
+      });
+    } catch (error) {
+      console.error('Failed to update skill path:', error);
+      
+      toast({
+        title: "Error",
+        description: "Failed to update skill path",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSaveNotes = () => {
+  const saveNotes = async () => {
     if (!activeSkill) return;
+    
+    setIsLoading(true);
 
-    const newNote: LearningNote = {
+    // Save to database first
+    try {
+      const res = await fetch('/api/learning-notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          day: appState.progress.currentDay,
+          skillPathId: activeSkill.id,
+          content: learningNotes,
+        }),
+      });
+      // Keep textarea value as-is on success
+      if (!res.ok) {
+        console.error('Failed to save learning notes to database, status:', res.status);
+      }
+    } catch (error) {
+      console.error('Failed to save learning notes to database:', error);
+    }
+
+    // Always also save to localStorage for compatibility using the correct schema
+    const newNote = {
       id: `${appState.progress.currentDay}-${activeSkill.id}-note`,
       date: new Date(),
       day: appState.progress.currentDay,
@@ -71,7 +154,13 @@ export default function Skills() {
       title: "Notes Saved! 📝",
       description: "Your learning notes have been saved successfully.",
     });
+
+    // Clear the textarea after saving
+    setLearningNotes("");
+    setIsLoading(false);
   };
+
+  const handleSaveNotes = debounce(saveNotes, 600);
 
   const handleExportNotes = () => {
     const skillNotes = appState.learningNotes
@@ -154,7 +243,7 @@ export default function Skills() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          {appState.skillPaths.map((skill, index) => (
+          {(skillPaths.length > 0 ? skillPaths : appState.skillPaths).map((skill, index) => (
             <motion.div
               key={skill.id}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -229,7 +318,7 @@ export default function Skills() {
                           >
                             <input 
                               type="checkbox" 
-                              className="w-5 h-5 text-primary rounded mt-0.5"
+                              className="w-4 h-4 text-primary rounded mt-0.5"
                               data-testid={`learning-task-${task.id}`}
                             />
                             <div>
@@ -301,7 +390,14 @@ export default function Skills() {
                   <h3 className="text-xl font-bold mb-4">Learning Progress</h3>
                   
                   <div className="space-y-4">
-                    {activeSkill.topics.map((topic, index) => (
+                    {(() => {
+                      let topics: any[] = [];
+                      if (Array.isArray(activeSkill.topics)) topics = activeSkill.topics as any[];
+                      else if (typeof activeSkill.topics === 'string') {
+                        try { topics = JSON.parse(activeSkill.topics as any); } catch { topics = []; }
+                      }
+                      return topics;
+                    })().map((topic: { name: string; progress: number }, index: number) => (
                       <motion.div 
                         key={topic.name}
                         initial={{ opacity: 0, x: -10 }}

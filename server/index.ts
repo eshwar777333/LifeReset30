@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -60,12 +61,38 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 5000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  const desiredPort = parseInt(process.env.PORT || '5000', 10);
+
+  // In development, fall back to the next available port if the desired one is busy.
+  // In production, still honor PORT strictly (no fallback) due to hosting constraints.
+  const env = app.get("env");
+  const devFallbackLimit = 20; // try up to 20 subsequent ports in dev
+
+  const tryListen = (portToTry: number, attempts = 0) => {
+    const onError = (err: any) => {
+      if (err && err.code === 'EADDRINUSE' && env === 'development' && attempts < devFallbackLimit) {
+        const nextPort = portToTry + 1;
+        log(`port ${portToTry} in use, trying ${nextPort}`, 'server');
+        // Try next port
+        tryListen(nextPort, attempts + 1);
+      } else {
+        // Re-throw to crash in production or after exceeding attempts
+        throw err;
+      }
+    };
+
+    // Ensure we only handle the next error once per attempt
+    server.once('error', onError);
+    server.listen({
+      port: portToTry,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      // Remove the error handler after successful bind to avoid memory leaks
+      server.removeListener('error', onError);
+      log(`serving on port ${portToTry}`);
+    });
+  };
+
+  tryListen(desiredPort);
 })();

@@ -48,6 +48,17 @@
     @apply border-border;
   }
 
+/* Night theme adjustments applied by useThemeSchedule */
+.theme-night {
+  --background: 12 10% 8%;
+  --foreground: 12 10% 96%;
+  --muted: 12 10% 14%;
+  --muted-foreground: 12 10% 70%;
+  --primary: 25 95% 56%; /* warm amber */
+}
+
+.theme-night .glass-card { backdrop-filter: saturate(0.9) blur(8px); }
+
   body {
     @apply font-sans antialiased;
     background: radial-gradient(ellipse at top, hsl(217 33% 17% / 0.3) 0%, hsl(222 84% 4.9%) 100%);

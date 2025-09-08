@@ -32,7 +32,9 @@ const upload = multer({
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed!'), false);
+  // Reject non-image files without raising a typed error to satisfy TS types
+  // Downstream route will respond with 400 when no file is present
+  cb(null, false);
     }
   },
   limits: {
@@ -105,6 +107,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Complete current day (idempotent) and advance progress
+  app.post('/api/progress/complete-day', async (req, res) => {
+    try {
+      const { verify } = req.body || {};
+      let progress = await storage.getUserProgress(DEFAULT_USER_ID);
+      if (!progress) {
+        progress = await storage.updateUserProgress(DEFAULT_USER_ID, {
+          currentDay: 1,
+          streak: 0,
+          completedDays: JSON.stringify([]),
+          totalTasksCompleted: 0,
+          startDate: new Date(),
+          lastActiveDate: new Date(),
+        });
+      }
+
+      const completedDaysArr: number[] = JSON.parse(progress.completedDays || '[]');
+      const currentDay = progress.currentDay ?? 1;
+
+      // Optional verification: if tasks exist for current day and any are incomplete, block
+      if (verify) {
+        const tasks = await storage.getDailyTasks(DEFAULT_USER_ID, currentDay);
+        if (tasks.length > 0 && tasks.some(t => !t.completed)) {
+          return res.status(400).json({ error: 'Not all tasks are completed for today' });
+        }
+      }
+
+      // Idempotent: if already completed, return current progress
+      if (completedDaysArr.includes(currentDay)) {
+        return res.json({
+          ...progress,
+          completedDays: completedDaysArr,
+        });
+      }
+
+      const updatedCompletedDays = Array.from(new Set([...completedDaysArr, currentDay])).sort((a, b) => a - b);
+      const nextDay = Math.min((progress.currentDay ?? 1) + 1, 30);
+      const newStreak = (progress.streak ?? 0) + 1;
+
+      const updated = await storage.updateUserProgress(DEFAULT_USER_ID, {
+        currentDay: nextDay,
+        streak: newStreak,
+        completedDays: JSON.stringify(updatedCompletedDays),
+        lastActiveDate: new Date(),
+      });
+
+      const formatted = {
+        ...updated,
+        completedDays: updatedCompletedDays,
+      };
+      res.json(formatted);
+    } catch (error) {
+      console.error('Error completing day:', error);
+      res.status(500).json({ error: 'Failed to complete day' });
+    }
+  });
+
   // Daily Tasks Routes
   app.get('/api/tasks/:day', async (req, res) => {
     try {
@@ -163,6 +222,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Recent journals (optional helper for Weekly Review)
+  app.get('/api/journals', async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 30;
+      // storage lacks a list method; fallback to empty for now to avoid heavy changes
+      // Clients use local backup if this returns empty.
+      res.json([]);
+    } catch (error) {
+      res.json([]);
+    }
+  });
+
   app.post('/api/journal', async (req, res) => {
     try {
       const entryData = insertJournalEntrySchema.parse({
@@ -190,14 +261,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Skill Paths Routes
   app.get('/api/skills', async (req, res) => {
     try {
-      const skillPaths = await storage.getSkillPaths(DEFAULT_USER_ID);
-      
+      let skillPaths = await storage.getSkillPaths(DEFAULT_USER_ID);
+
+      // If no skill paths exist for the user, seed defaults
+      if (!skillPaths || skillPaths.length === 0) {
+        const defaultSkills = [
+          {
+            name: 'Coding',
+            description: 'React, JavaScript, APIs',
+            icon: 'fas fa-code',
+            isActive: true,
+            progress: 0,
+            topics: [
+              { name: 'React Fundamentals', progress: 0 },
+              { name: 'State Management', progress: 0 },
+              { name: 'API Integration', progress: 0 },
+            ],
+          },
+          {
+            name: 'Entrepreneurship',
+            description: 'Business, Strategy, Marketing',
+            icon: 'fas fa-rocket',
+            isActive: false,
+            progress: 0,
+            topics: [
+              { name: 'Business Planning', progress: 0 },
+              { name: 'Market Research', progress: 0 },
+              { name: 'Strategy Development', progress: 0 },
+            ],
+          },
+          {
+            name: 'Digital Marketing',
+            description: 'SEO, Social Media, Content',
+            icon: 'fas fa-bullhorn',
+            isActive: false,
+            progress: 0,
+            topics: [
+              { name: 'SEO Fundamentals', progress: 0 },
+              { name: 'Social Media Strategy', progress: 0 },
+              { name: 'Content Marketing', progress: 0 },
+            ],
+          },
+          {
+            name: 'Sales',
+            description: 'Communication, Negotiation',
+            icon: 'fas fa-handshake',
+            isActive: false,
+            progress: 0,
+            topics: [
+              { name: 'Communication Skills', progress: 0 },
+              { name: 'Negotiation Tactics', progress: 0 },
+              { name: 'Customer Psychology', progress: 0 },
+            ],
+          },
+        ];
+
+        for (const skill of defaultSkills) {
+          try {
+            await storage.createSkillPath({
+              userId: DEFAULT_USER_ID,
+              name: skill.name,
+              description: skill.description,
+              icon: skill.icon,
+              isActive: skill.isActive,
+              progress: skill.progress,
+              topics: JSON.stringify(skill.topics),
+            });
+          } catch (e) {
+            console.error('Error seeding default skill path:', skill.name, e);
+          }
+        }
+
+        // Reload after seeding
+        skillPaths = await storage.getSkillPaths(DEFAULT_USER_ID);
+      }
+
       // Parse JSON fields
       const formattedSkillPaths = skillPaths.map(skill => ({
         ...skill,
         topics: JSON.parse(skill.topics || '[]'),
       }));
-      
+
       res.json(formattedSkillPaths);
     } catch (error) {
       console.error('Error getting skill paths:', error);

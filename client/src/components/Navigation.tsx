@@ -13,6 +13,8 @@ export function Navigation({ streak }: NavigationProps) {
     { href: "/", label: "Dashboard", icon: "fas fa-home" },
     { href: "/challenges", label: "Challenges", icon: "fas fa-tasks" },
     { href: "/progress", label: "Progress", icon: "fas fa-chart-line" },
+  { href: "/review", label: "Review", icon: "fas fa-chart-pie" },
+  { href: "/focus", label: "Focus", icon: "fas fa-bullseye" },
     { href: "/skills", label: "Skills", icon: "fas fa-brain" },
     { href: "/vision", label: "Vision", icon: "fas fa-eye" },
   ];

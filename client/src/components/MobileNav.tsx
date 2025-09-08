@@ -1,26 +1,30 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { useSound } from "@/hooks/useSound";
 
 export function MobileNav() {
   const [location] = useLocation();
+  const { enabled, toggle } = useSound();
 
   const navItems = [
     { href: "/", label: "Home", icon: "fas fa-home" },
     { href: "/challenges", label: "Tasks", icon: "fas fa-tasks" },
     { href: "/progress", label: "Progress", icon: "fas fa-chart-line" },
+    { href: "/review", label: "Review", icon: "fas fa-chart-pie" },
+    { href: "/focus", label: "Focus", icon: "fas fa-bullseye" },
     { href: "/skills", label: "Skills", icon: "fas fa-brain" },
     { href: "/vision", label: "Vision", icon: "fas fa-eye" },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card/98 backdrop-blur-xl border-t border-border/50 md:hidden z-40 safe-area-bottom">
-      <div className="grid grid-cols-5 h-20 px-1">
+      <div className="flex h-20 px-1 overflow-x-auto gap-1" style={{ WebkitOverflowScrolling: 'touch' }}>
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center transition-all duration-300 rounded-lg mx-1 my-2 relative overflow-hidden group",
+              "flex flex-col items-center justify-center transition-all duration-300 rounded-lg mx-1 my-2 relative overflow-hidden group min-w-[68px] flex-1",
               location === item.href 
                 ? "text-primary bg-primary/10 scale-105" 
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50 active:scale-95"
@@ -31,11 +35,11 @@ export function MobileNav() {
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-primary rounded-b-full"></div>
             )}
             <i className={cn(
-              `${item.icon} text-lg mb-1 transition-all duration-300`,
+              `${item.icon} text-base mb-1 transition-all duration-300`,
               location === item.href ? "scale-110" : "group-hover:scale-105"
             )}></i>
             <span className={cn(
-              "text-xs font-medium transition-all duration-300",
+              "text-[11px] font-medium transition-all duration-300",
               location === item.href ? "font-bold" : ""
             )}>
               {item.label}
@@ -45,6 +49,23 @@ export function MobileNav() {
             )}
           </Link>
         ))}
+        {/* Quick mute at the end */}
+        <button
+          type="button"
+          onClick={toggle}
+          className={cn(
+            "flex flex-col items-center justify-center transition-all duration-300 rounded-lg mx-1 my-2 relative overflow-hidden group min-w-[68px] flex-1",
+            enabled ? "text-muted-foreground hover:text-foreground hover:bg-muted/50" : "text-primary bg-primary/10"
+          )}
+          aria-label={enabled ? "Mute" : "Unmute"}
+          data-testid="mobile-nav-sound"
+        >
+          {enabled && (
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-border rounded-b-full"></div>
+          )}
+          <i className={`fas ${enabled ? 'fa-volume-up' : 'fa-volume-mute'} text-base mb-1 transition-all duration-300`} />
+          <span className="text-[11px] font-medium transition-all duration-300">{enabled ? 'Sound' : 'Muted'}</span>
+        </button>
       </div>
     </nav>
   );

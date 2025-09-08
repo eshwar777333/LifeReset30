@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Reset 30 - Transform Your Life in 30 Days</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    success: {
+                        DEFAULT: "var(--success)",
+                        foreground: "var(--success-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                },
+                fontFamily: {
+                    sans: ["Inter", "system-ui", "sans-serif"],
+                },
+                animation: {
+                    'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    'bounce-subtle': 'bounce 2s infinite',
+                    'glow': 'glow 2s ease-in-out infinite alternate',
+                }
+            },
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: hsl(0 0% 4%);
+            --foreground: hsl(0 0% 98%);
+            --card: hsl(0 0% 8%);
+            --card-foreground: hsl(0 0% 98%);
+            --primary: hsl(217 100% 50%);
+            --primary-foreground: hsl(0 0% 100%);
+            --secondary: hsl(345 100% 50%);
+            --secondary-foreground: hsl(0 0% 100%);
+            --muted: hsl(0 0% 12%);
+            --muted-foreground: hsl(0 0% 65%);
+            --accent: hsl(0 0% 100%);
+            --accent-foreground: hsl(0 0% 4%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --success: hsl(142 71% 45%);
+            --success-foreground: hsl(0 0% 98%);
+            --border: hsl(0 0% 15%);
+            --input: hsl(0 0% 15%);
+            --ring: hsl(217 100% 50%);
+            --radius: 12px;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px -10px var(--primary); }
+            to { box-shadow: 0 0 20px -5px var(--primary); }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0066FF 0%, #FF0040 100%);
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .progress-bar {
+            transition: width 1s ease-out;
+        }
+
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-circle {
+            transition: stroke-dasharray 1s linear;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground font-sans antialiased">
+    <!-- Background Animation -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse-slow delay-1000"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-card/80 glass-effect border-b border-border">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold">Life Reset 30</h1>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#dashboard" class="nav-item text-primary font-medium">Dashboard</a>
+                    <a href="#challenges" class="nav-item hover:text-primary transition-colors">Challenges</a>
+                    <a href="#progress" class="nav-item hover:text-primary transition-colors">Progress</a>
+                    <a href="#skills" class="nav-item hover:text-primary transition-colors">Skills</a>
+                    <a href="#vision" class="nav-item hover:text-primary transition-colors">Vision</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden text-foreground">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+
+                <!-- Streak Counter -->
+                <div class="hidden sm:flex items-center space-x-2 bg-muted px-3 py-2 rounded-lg">
+                    <i class="fas fa-fire text-orange-500"></i>
+                    <span class="font-bold" data-bind="streakCount">12</span>
+                    <span class="text-sm text-muted-foreground">days</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-8">
+        <!-- @COMPONENT: Dashboard [Main dashboard with daily overview] -->
+        <section id="dashboard" class="container mx-auto px-4 mb-12">
+            <!-- Daily Quote Header -->
+            <div class="text-center mb-8">
+                <div class="gradient-bg text-transparent bg-clip-text mb-4">
+                    <h2 class="text-3xl md:text-5xl font-black tracking-tight">
+                        "DISCIPLINE = FREEDOM"
+                    </h2>
+                </div>
+                <p class="text-lg text-muted-foreground">Day <span class="text-primary font-bold" data-bind="currentDay">18</span> of 30 • You're crushing it! 💪</p>
+            </div>
+
+            <!-- Progress Overview Card -->
+            <div class="bg-card border border-border rounded-xl p-6 mb-8 hover-scale">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold">Your Journey</h3>
+                    <div class="text-right">
+                        <div class="text-2xl font-black text-primary" data-bind="progressPercentage">60%</div>
+                        <div class="text-sm text-muted-foreground">Complete</div>
+                    </div>
+                </div>
+                
+                <div class="w-full bg-muted rounded-full h-4 mb-4">
+                    <div class="bg-gradient-to-r from-primary to-success h-4 rounded-full progress-bar" style="width: 60%"></div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-lg font-bold text-success" data-bind="completedDays">18</div>
+                        <div class="text-sm text-muted-foreground">Days Done</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-primary" data-bind="streakDays">12</div>
+                        <div class="text-sm text-muted-foreground">Streak</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-secondary" data-bind="remainingDays">12</div>
+                        <div class="text-sm text-muted-foreground">To Go</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Tasks -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <!-- Morning Routine -->
+                <div class="bg-card border border-border rounded-xl p-6 hover-scale">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-lg">Morning Routine</h3>
+                        <i class="fas fa-sun text-yellow-500 text-xl"></i>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" checked class="w-5 h-5 text-primary rounded">
+                            <span class="line-through text-muted-foreground">Cold Shower (5 min)</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" checked class="w-5 h-5 text-primary rounded">
+                            <span class="line-through text-muted-foreground">Meditation (10 min)</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-primary rounded">
+                            <span>Gratitude Journal</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm text-success">2/3 Complete ✅</div>
+                </div>
+
+                <!-- Skill Development -->
+                <div class="bg-card border border-border rounded-xl p-6 hover-scale">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-lg">Skill Building</h3>
+                        <i class="fas fa-brain text-purple-500 text-xl"></i>
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-sm text-muted-foreground mb-2">Today's Focus:</div>
+                        <div class="font-semibold text-primary">React Components</div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-primary rounded">
+                            <span>Complete tutorial (30 min)</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-primary rounded">
+                            <span>Build mini-project</span>
+                        </div>
+                    </div>
+                    <button class="mt-4 w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Start Learning
+                    </button>
+                </div>
+
+                <!-- Evening Reflection -->
+                <div class="bg-card border border-border rounded-xl p-6 hover-scale">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-lg">Evening Reflection</h3>
+                        <i class="fas fa-moon text-blue-400 text-xl"></i>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-primary rounded">
+                            <span>Exercise (20 min)</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-primary rounded">
+                            <span>Daily reflection</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-primary rounded">
+                            <span>Plan tomorrow</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm text-muted-foreground">0/3 Complete</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button class="bg-primary text-primary-foreground p-4 rounded-xl font-medium hover:bg-primary/90 transition-colors hover-scale">
+                    <i class="fas fa-play mb-2 text-xl block"></i>
+                    Start Timer
+                </button>
+                <button class="bg-card border border-border text-card-foreground p-4 rounded-xl font-medium hover:bg-muted transition-colors hover-scale">
+                    <i class="fas fa-book mb-2 text-xl block"></i>
+                    Journal
+                </button>
+                <button class="bg-card border border-border text-card-foreground p-4 rounded-xl font-medium hover:bg-muted transition-colors hover-scale">
+                    <i class="fas fa-chart-line mb-2 text-xl block"></i>
+                    Progress
+                </button>
+                <button class="bg-secondary text-secondary-foreground p-4 rounded-xl font-medium hover:bg-secondary/90 transition-colors hover-scale">
+                    <i class="fas fa-exclamation-triangle mb-2 text-xl block"></i>
+                    SOS Mode
+                </button>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: Dashboard -->
+
+        <!-- @COMPONENT: DailyChallenges [Task management and timers] -->
+        <section id="challenges" class="container mx-auto px-4 mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Today's Challenges</h2>
+                <p class="text-muted-foreground">Small steps lead to big transformations</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Challenge Checklist -->
+                <div class="space-y-4">
+                    <div class="bg-card border border-border rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-6">Daily Tasks</h3>
+                        
+                        <div class="space-y-4">
+                            <!-- @MAP: dailyTasks.map(task => ( -->
+                            <div class="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <input type="checkbox" checked class="w-6 h-6 text-primary rounded">
+                                    <div>
+                                        <div class="font-medium line-through text-muted-foreground">Cold Shower</div>
+                                        <div class="text-sm text-muted-foreground">5 minutes • Boost alertness</div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-check-circle text-success text-xl"></i>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <input type="checkbox" class="w-6 h-6 text-primary rounded">
+                                    <div>
+                                        <div class="font-medium">Meditation Session</div>
+                                        <div class="text-sm text-muted-foreground">10 minutes • Clear your mind</div>
+                                    </div>
+                                </div>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                                    Start
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <input type="checkbox" class="w-6 h-6 text-primary rounded">
+                                    <div>
+                                        <div class="font-medium">Exercise</div>
+                                        <div class="text-sm text-muted-foreground">20 minutes • Build strength</div>
+                                    </div>
+                                </div>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                                    Start
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <input type="checkbox" class="w-6 h-6 text-primary rounded">
+                                    <div>
+                                        <div class="font-medium">Skill Learning</div>
+                                        <div class="text-sm text-muted-foreground">30 minutes • React components</div>
+                                    </div>
+                                </div>
+                                <button class="bg-card border border-border text-card-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+                                    Later
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <input type="checkbox" class="w-6 h-6 text-primary rounded">
+                                    <div>
+                                        <div class="font-medium">Evening Journal</div>
+                                        <div class="text-sm text-muted-foreground">10 minutes • Reflect on today</div>
+                                    </div>
+                                </div>
+                                <button class="bg-card border border-border text-card-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+                                    Tonight
+                                </button>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timer Section -->
+                <div class="space-y-4">
+                    <!-- Meditation Timer -->
+                    <div class="bg-card border border-border rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-6 text-center">Meditation Timer</h3>
+                        
+                        <div class="relative w-48 h-48 mx-auto mb-6">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" fill="none" class="text-muted"/>
+                                <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="4" fill="none" 
+                                        class="text-primary timer-circle" stroke-dasharray="282.7 282.7" stroke-dashoffset="70.7"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold" data-bind="timerMinutes">7</div>
+                                    <div class="text-sm text-muted-foreground">minutes left</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center space-x-4">
+                            <button class="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <i class="fas fa-pause mr-2"></i> Pause
+                            </button>
+                            <button class="bg-card border border-border text-card-foreground px-6 py-3 rounded-lg font-medium hover:bg-muted transition-colors">
+                                <i class="fas fa-stop mr-2"></i> Stop
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Journal Input -->
+                    <div class="bg-card border border-border rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4">Evening Reflection</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">What went well today?</label>
+                                <textarea class="w-full bg-input border border-border rounded-lg p-3 text-sm resize-none" 
+                                         rows="3" placeholder="Write your thoughts..." data-mock="true"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">What could I improve?</label>
+                                <textarea class="w-full bg-input border border-border rounded-lg p-3 text-sm resize-none" 
+                                         rows="3" placeholder="Be honest with yourself..." data-mock="true"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Tomorrow's priority?</label>
+                                <textarea class="w-full bg-input border border-border rounded-lg p-3 text-sm resize-none" 
+                                         rows="2" placeholder="Focus on one key thing..." data-mock="true"></textarea>
+                            </div>
+                        </div>
+
+                        <button class="w-full mt-4 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                            Save Reflection
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: DailyChallenges -->
+
+        <!-- @COMPONENT: ProgressPage [30-day progress tracking and badges] -->
+        <section id="progress" class="container mx-auto px-4 mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Your Progress</h2>
+                <p class="text-muted-foreground">Every day counts towards your transformation</p>
+            </div>
+
+            <!-- Achievement Badges -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-card border border-success/50 rounded-xl p-4 text-center hover-scale">
+                    <div class="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-trophy text-success text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-success">First Week</h3>
+                    <p class="text-sm text-muted-foreground">Unlocked Day 7</p>
+                </div>
+
+                <div class="bg-card border border-success/50 rounded-xl p-4 text-center hover-scale">
+                    <div class="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-fire text-success text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-success">Two Weeks</h3>
+                    <p class="text-sm text-muted-foreground">Unlocked Day 14</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-4 text-center opacity-50">
+                    <div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-star text-muted-foreground text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-muted-foreground">Three Weeks</h3>
+                    <p class="text-sm text-muted-foreground">Locked</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-4 text-center opacity-50">
+                    <div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-crown text-muted-foreground text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-muted-foreground">Champion</h3>
+                    <p class="text-sm text-muted-foreground">Day 30 Goal</p>
+                </div>
+            </div>
+
+            <!-- 30-Day Calendar View -->
+            <div class="bg-card border border-border rounded-xl p-6 mb-8">
+                <h3 class="text-xl font-bold mb-6">30-Day Journey</h3>
+                
+                <div class="grid grid-cols-7 gap-2 md:gap-3">
+                    <!-- @MAP: Array.from({length: 30}, (_, i) => ( -->
+                    <!-- Days 1-7 (completed) -->
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">1</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">2</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">3</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">4</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">5</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">6</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">7</div>
+                    <!-- Days 8-14 (completed) -->
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">8</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">9</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">10</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">11</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">12</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">13</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">14</div>
+                    <!-- Days 15-18 (completed) -->
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">15</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">16</div>
+                    <div class="aspect-square bg-success rounded-lg flex items-center justify-center text-success-foreground font-bold text-sm">17</div>
+                    <!-- Current day -->
+                    <div class="aspect-square bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-sm ring-2 ring-primary ring-offset-2 ring-offset-background">18</div>
+                    <!-- Future days -->
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">19</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">20</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">21</div>
+                    <!-- Continue pattern... -->
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">22</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">23</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">24</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">25</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">26</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">27</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">28</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">29</div>
+                    <div class="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground font-bold text-sm">30</div>
+                    <!-- @END_MAP )) -->
+                </div>
+
+                <div class="mt-6 flex items-center justify-center space-x-6 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-success rounded"></div>
+                        <span>Completed</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-primary rounded"></div>
+                        <span>Today</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-muted rounded"></div>
+                        <span>Upcoming</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-card border border-border rounded-xl p-6 text-center">
+                    <div class="text-3xl font-black text-primary mb-2" data-bind="totalStreak">12</div>
+                    <div class="font-medium">Current Streak</div>
+                    <div class="text-sm text-muted-foreground mt-1">🔥 Keep it going!</div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-6 text-center">
+                    <div class="text-3xl font-black text-success mb-2" data-bind="completionRate">85%</div>
+                    <div class="font-medium">Completion Rate</div>
+                    <div class="text-sm text-muted-foreground mt-1">📈 Excellent progress</div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-6 text-center">
+                    <div class="text-3xl font-black text-secondary mb-2" data-bind="daysRemaining">12</div>
+                    <div class="font-medium">Days Remaining</div>
+                    <div class="text-sm text-muted-foreground mt-1">🎯 You're almost there</div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: ProgressPage -->
+
+        <!-- @COMPONENT: SkillBuilder [Skill learning paths and resources] -->
+        <section id="skills" class="container mx-auto px-4 mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Skill Builder</h2>
+                <p class="text-muted-foreground">Master new skills, one day at a time</p>
+            </div>
+
+            <!-- Skill Path Selection -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-card border-2 border-primary rounded-xl p-6 hover-scale cursor-pointer">
+                    <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-code text-primary text-xl"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Coding</h3>
+                    <p class="text-sm text-muted-foreground mb-3">React, JavaScript, APIs</p>
+                    <div class="text-sm text-primary font-medium">Currently Active</div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-6 hover-scale cursor-pointer">
+                    <div class="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-rocket text-muted-foreground text-xl"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Entrepreneurship</h3>
+                    <p class="text-sm text-muted-foreground mb-3">Business, Strategy, Marketing</p>
+                    <div class="text-sm text-muted-foreground">Select Path</div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-6 hover-scale cursor-pointer">
+                    <div class="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-bullhorn text-muted-foreground text-xl"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Digital Marketing</h3>
+                    <p class="text-sm text-muted-foreground mb-3">SEO, Social Media, Content</p>
+                    <div class="text-sm text-muted-foreground">Select Path</div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-6 hover-scale cursor-pointer">
+                    <div class="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-handshake text-muted-foreground text-xl"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Sales</h3>
+                    <p class="text-sm text-muted-foreground mb-3">Communication, Negotiation</p>
+                    <div class="text-sm text-muted-foreground">Select Path</div>
+                </div>
+            </div>
+
+            <!-- Current Learning Track -->
+            <div class="bg-card border border-border rounded-xl p-6 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold">Today's Coding Challenge</h3>
+                    <div class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                        Day 18 of 30
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Today's Task -->
+                    <div>
+                        <h4 class="font-semibold mb-4 text-primary">React Component State</h4>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" checked class="w-5 h-5 text-primary rounded mt-0.5">
+                                <div>
+                                    <div class="font-medium line-through text-muted-foreground">Watch: useState Hook Tutorial</div>
+                                    <div class="text-sm text-muted-foreground">15 minutes</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" class="w-5 h-5 text-primary rounded mt-0.5">
+                                <div>
+                                    <div class="font-medium">Build: Counter Component</div>
+                                    <div class="text-sm text-muted-foreground">20 minutes • Practice state management</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" class="w-5 h-5 text-primary rounded mt-0.5">
+                                <div>
+                                    <div class="font-medium">Challenge: Todo List</div>
+                                    <div class="text-sm text-muted-foreground">30 minutes • Advanced state handling</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h5 class="font-medium text-sm">Resources:</h5>
+                            <div class="space-y-2">
+                                <a href="#" class="block text-sm text-primary hover:underline">📹 React Hooks Documentation</a>
+                                <a href="#" class="block text-sm text-primary hover:underline">💻 CodeSandbox Template</a>
+                                <a href="#" class="block text-sm text-primary hover:underline">📚 Component Best Practices</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div>
+                        <h4 class="font-semibold mb-4">Learning Notes</h4>
+                        <textarea class="w-full h-48 bg-input border border-border rounded-lg p-4 text-sm resize-none" 
+                                  placeholder="Take notes on what you learned today..." data-mock="true">
+useState allows me to add state to functional components.
+The hook returns an array: [value, setter function]
+
+Key concepts:
+- State updates are asynchronous
+- Use functional updates for complex state
+- Multiple state variables = multiple useState calls
+
+Next: Learn useEffect for side effects
+                        </textarea>
+                        
+                        <div class="flex space-x-3 mt-4">
+                            <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex-1">
+                                Save Notes
+                            </button>
+                            <button class="bg-card border border-border text-card-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Tracker -->
+            <div class="bg-card border border-border rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Learning Progress</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="font-medium">React Fundamentals</span>
+                            <span class="text-muted-foreground">85%</span>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-3">
+                            <div class="bg-gradient-to-r from-primary to-success h-3 rounded-full progress-bar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="font-medium">State Management</span>
+                            <span class="text-muted-foreground">60%</span>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-3">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-3 rounded-full progress-bar" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="font-medium">API Integration</span>
+                            <span class="text-muted-foreground">25%</span>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-3">
+                            <div class="bg-gradient-to-r from-secondary to-primary h-3 rounded-full progress-bar" style="width: 25%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: SkillBuilder -->
+
+        <!-- @COMPONENT: VisionBoard [Goal visualization and motivation] -->
+        <section id="vision" class="container mx-auto px-4 mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Vision Board</h2>
+                <p class="text-muted-foreground">Visualize your dreams, make them reality</p>
+            </div>
+
+            <!-- Add Vision Button -->
+            <div class="text-center mb-8">
+                <button class="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors hover-scale">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add New Vision
+                </button>
+            </div>
+
+            <!-- Vision Cards Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- @MAP: visionGoals.map(vision => ( -->
+                <div class="bg-card border border-border rounded-xl overflow-hidden hover-scale cursor-pointer group">
+                    <!-- Dream car image -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
+                             alt="BMW M3 sports car" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-mock-image="true" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h3 class="font-bold text-lg">BMW M3</h3>
+                            <p class="text-sm opacity-90">Dream Car Goal</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm text-muted-foreground">Target</div>
+                                <div class="font-bold">December 2024</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-muted-foreground">Progress</div>
+                                <div class="font-bold text-primary">40%</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-2 mt-3">
+                            <div class="bg-primary h-2 rounded-full progress-bar" style="width: 40%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl overflow-hidden hover-scale cursor-pointer group">
+                    <!-- Income target visualization -->
+                    <div class="relative h-48 overflow-hidden bg-gradient-to-br from-success to-primary flex items-center justify-center">
+                        <div class="text-white text-center">
+                            <div class="text-4xl font-black mb-2">$100K</div>
+                            <div class="text-lg">Annual Income</div>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <i class="fas fa-dollar-sign text-white/20 text-6xl"></i>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm text-muted-foreground">Current</div>
+                                <div class="font-bold">$65K</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-muted-foreground">Progress</div>
+                                <div class="font-bold text-success">65%</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-2 mt-3">
+                            <div class="bg-success h-2 rounded-full progress-bar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl overflow-hidden hover-scale cursor-pointer group">
+                    <!-- Startup idea -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
+                             alt="Startup office workspace with laptops and planning boards" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-mock-image="true" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h3 class="font-bold text-lg">SaaS Startup</h3>
+                            <p class="text-sm opacity-90">Tech Business</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm text-muted-foreground">Launch Date</div>
+                                <div class="font-bold">Q2 2024</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-muted-foreground">Progress</div>
+                                <div class="font-bold text-secondary">15%</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-2 mt-3">
+                            <div class="bg-secondary h-2 rounded-full progress-bar" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+
+            <!-- Motivational Quotes -->
+            <div class="text-center">
+                <div class="bg-gradient-to-r from-primary to-secondary p-8 rounded-xl">
+                    <blockquote class="text-2xl md:text-3xl font-black text-white mb-4">
+                        "Your dreams don't have an expiration date.<br />
+                        Take a deep breath and try again."
+                    </blockquote>
+                    <cite class="text-white/80">— KT Witten</cite>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: VisionBoard -->
+
+        <!-- @COMPONENT: EmergencyButton [Distraction management system] -->
+        <section class="container mx-auto px-4 mb-12">
+            <!-- Emergency/SOS Button -->
+            <div class="text-center">
+                <div class="bg-gradient-to-br from-secondary to-destructive p-8 rounded-2xl mb-8 animate-pulse-slow">
+                    <h2 class="text-2xl md:text-3xl font-black text-white mb-4">
+                        FEELING DISTRACTED?
+                    </h2>
+                    <p class="text-white/90 mb-6">Break the pattern. Take control. Get back on track.</p>
+                    
+                    <button class="bg-white text-secondary px-12 py-4 rounded-xl font-black text-xl hover:bg-white/90 transition-all hover:scale-105 transform shadow-2xl">
+                        <i class="fas fa-exclamation-triangle mr-3"></i>
+                        EMERGENCY RESET
+                    </button>
+                    
+                    <div class="mt-6 text-white/80 text-sm">
+                        Click when you feel tempted or distracted
+                    </div>
+                </div>
+
+                <!-- Quick Recovery Actions -->
+                <div class="grid md:grid-cols-3 gap-4">
+                    <button class="bg-card border border-border p-6 rounded-xl hover:bg-muted transition-colors hover-scale">
+                        <i class="fas fa-dumbbell text-secondary text-2xl mb-3 block"></i>
+                        <div class="font-bold mb-1">5 Push-ups</div>
+                        <div class="text-sm text-muted-foreground">Reset your energy</div>
+                    </button>
+                    
+                    <button class="bg-card border border-border p-6 rounded-xl hover:bg-muted transition-colors hover-scale">
+                        <i class="fas fa-om text-primary text-2xl mb-3 block"></i>
+                        <div class="font-bold mb-1">2-Min Breathe</div>
+                        <div class="text-sm text-muted-foreground">Clear your mind</div>
+                    </button>
+                    
+                    <button class="bg-card border border-border p-6 rounded-xl hover:bg-muted transition-colors hover-scale">
+                        <i class="fas fa-eye text-success text-2xl mb-3 block"></i>
+                        <div class="font-bold mb-1">Vision Review</div>
+                        <div class="text-sm text-muted-foreground">Remember your why</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: EmergencyButton -->
+
+        <!-- Motivational Footer -->
+        <footer class="bg-card border-t border-border py-12">
+            <div class="container mx-auto px-4 text-center">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold gradient-bg bg-clip-text text-transparent mb-2">
+                        "1% BETTER EVERY DAY"
+                    </h3>
+                    <p class="text-muted-foreground">Small consistent actions lead to extraordinary results</p>
+                </div>
+                
+                <div class="flex justify-center items-center space-x-8 text-sm text-muted-foreground">
+                    <div>Day <span class="text-primary font-bold">18</span> of 30</div>
+                    <div>•</div>
+                    <div><span class="text-success font-bold">60%</span> Complete</div>
+                    <div>•</div>
+                    <div><span class="text-secondary font-bold">12</span> Day Streak 🔥</div>
+                </div>
+                
+                <div class="mt-8 text-xs text-muted-foreground">
+                    <p>Life Reset 30 © 2024 • Transform Your Life, One Day at a Time</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Fixed Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-card/95 glass-effect border-t border-border md:hidden z-40">
+        <div class="grid grid-cols-5 h-16">
+            <a href="#dashboard" class="flex flex-col items-center justify-center text-primary">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-xs font-medium">Home</span>
+            </a>
+            <a href="#challenges" class="flex flex-col items-center justify-center text-muted-foreground hover:text-foreground">
+                <i class="fas fa-tasks text-lg mb-1"></i>
+                <span class="text-xs">Tasks</span>
+            </a>
+            <a href="#progress" class="flex flex-col items-center justify-center text-muted-foreground hover:text-foreground">
+                <i class="fas fa-chart-line text-lg mb-1"></i>
+                <span class="text-xs">Progress</span>
+            </a>
+            <a href="#skills" class="flex flex-col items-center justify-center text-muted-foreground hover:text-foreground">
+                <i class="fas fa-brain text-lg mb-1"></i>
+                <span class="text-xs">Skills</span>
+            </a>
+            <a href="#vision" class="flex flex-col items-center justify-center text-muted-foreground hover:text-foreground">
+                <i class="fas fa-eye text-lg mb-1"></i>
+                <span class="text-xs">Vision</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // TODO: Implement React components with state management, localStorage persistence, and timer functionality
+        (function() {
+            // Mock data binding for demonstration
+            const mockData = {
+                currentDay: 18,
+                streakCount: 12,
+                progressPercentage: 60,
+                completedDays: 18,
+                streakDays: 12,
+                remainingDays: 12,
+                timerMinutes: 7
+            };
+
+            // Simple navigation highlighting
+            function updateActiveNav() {
+                const sections = document.querySelectorAll('section[id]');
+                const navLinks = document.querySelectorAll('a[href^="#"]');
+                
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= 100 && rect.bottom >= 100) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('text-primary');
+                            link.classList.add('text-muted-foreground');
+                        });
+                        
+                        const activeLink = document.querySelector(`a[href="#${section.id}"]`);
+                        if (activeLink) {
+                            activeLink.classList.add('text-primary');
+                            activeLink.classList.remove('text-muted-foreground');
+                        }
+                    }
+                });
+            }
+
+            // Smooth scroll for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Update progress bars animation on scroll
+            function animateProgressBars() {
+                const progressBars = document.querySelectorAll('.progress-bar');
+                progressBars.forEach(bar => {
+                    const rect = bar.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        bar.style.width = bar.style.width || '0%';
+                    }
+                });
+            }
+
+            // Initialize
+            window.addEventListener('scroll', () => {
+                updateActiveNav();
+                animateProgressBars();
+            });
+            
+            updateActiveNav();
+            animateProgressBars();
+
+            // TODO: Implement timer functionality with countdown and notifications
+            // TODO: Add localStorage for progress persistence
+            // TODO: Implement daily reset system
+            // TODO: Add journal export functionality
+            // TODO: Connect vision board to goal tracking
+            // TODO: Implement emergency mode with motivational content
+        })();
+    </script>
+</body>
+</html>
